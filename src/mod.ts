@@ -16,13 +16,9 @@ class Mod implements IPostDBLoadMod {
     private HANDBOOK_GEARCASES = "5b5f6fa186f77409407a7eb7";
     ID = "684868d60b032cbbf606d3cf"
 
-    container: DependencyContainer;
-    logger: ILogger
-    modName: string = "Key Case";
-
     public postDBLoad(container: DependencyContainer): void {
         const logger = container.resolve<ILogger>("WinstonLogger");
-        logger.log(`[${this.modName}] : Mod loading`, LogTextColor.GREEN)
+        logger.log("[Key Case] : Mod loading", LogTextColor.GREEN)
         
         const databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
         const dbTables = databaseServer.getTables();
