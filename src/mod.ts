@@ -39,7 +39,7 @@ class Mod implements IPostDBLoadMod {
         }
         const item = structuredClone(baseItem);
 
-        item._props.DiscardLimit = -1;
+        item._props.DiscardLimit = 0;
 
         item._name = caseConfig.item_name;
         item._id = itemId;
@@ -55,8 +55,7 @@ class Mod implements IPostDBLoadMod {
                 cellsV: grid.height,
                 filters: [
                     {
-                        Filter: grid.included_filter || [],
-                        ExcludedFilter: []
+                        Filter: grid.included_filter || []
                     }
                 ]
             }
@@ -110,7 +109,8 @@ class Mod implements IPostDBLoadMod {
             upd:
             {
                 UnlimitedCount: caseConfig.unlimited_stock,
-                StackObjectsCount: caseConfig.stock_amount
+                StackObjectsCount: caseConfig.stock_amount,
+                BuyRestrictionMax: caseConfig.stock_amount
             }
         });
 
