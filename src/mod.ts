@@ -19,7 +19,7 @@ class Mod implements IPostDBLoadMod {
     public postDBLoad(container: DependencyContainer): void {
         const logger = container.resolve<ILogger>("WinstonLogger");
         logger.log("[Key Case] : Mod loading", LogTextColor.GREEN)
-        
+
         const databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
         const dbTables = databaseServer.getTables();
 
@@ -86,43 +86,47 @@ class Mod implements IPostDBLoadMod {
         this.pushToTrader(caseConfig, itemId, tables.traders);
     }
 
-    pushToTrader(caseConfig, itemID:string, dbTraders: Record<string, ITrader>){
+    pushToTrader(caseConfig, itemID: string, dbTraders: Record<string, ITrader>) {
         const traderID = {
             therapist: Traders.THERAPIST,
             ref: Traders.REF
         };
 
-        let traderToPush = caseConfig.trader;
-        for (const [key, val] of Object.entries(traderID))
-        {
-            if (key === caseConfig.trader){
-                traderToPush = val;
+        const configTraders = caseConfig.traders;
+
+        for (const i in configTraders) {
+
+            let traderToPush = configTraders[i].trader;
+            for (const [key, val] of Object.entries(traderID)) {
+                if (key === configTraders[i].trader) {
+                    traderToPush = val;
+                }
             }
-        }
-        const trader = dbTraders[traderToPush];
+            const trader = dbTraders[traderToPush];
 
-        trader.assort.items.push({
-            _id: itemID,
-            _tpl: itemID,
-            parentId: "hideout",
-            slotId: "hideout",
-            upd:
-            {
-                UnlimitedCount: caseConfig.unlimited_stock,
-                StackObjectsCount: caseConfig.stock_amount,
-                BuyRestrictionMax: caseConfig.stock_amount
+            trader.assort.items.push({
+                _id: itemID,
+                _tpl: itemID,
+                parentId: "hideout",
+                slotId: "hideout",
+                upd:
+                {
+                    UnlimitedCount: configTraders[i].unlimited_stock,
+                    StackObjectsCount: configTraders[i].stock_amount,
+                    BuyRestrictionMax: configTraders[i].stock_amount
+                }
+            });
+
+            const barterTrade: any = [];
+            const configBarters = configTraders[i].barter;
+
+            for (const barter in configBarters) {
+                barterTrade.push(configBarters[barter]);
             }
-        });
 
-        const barterTrade: any =[];
-        const configBarters = caseConfig.barter;
-
-        for (const barter in configBarters){
-            barterTrade.push(configBarters[barter]);
+            trader.assort.barter_scheme[itemID] = [barterTrade];
+            trader.assort.loyal_level_items[itemID] = configTraders[i].trader_loyalty_level;
         }
-
-        trader.assort.barter_scheme[itemID] = [barterTrade];
-        trader.assort.loyal_level_items[itemID] = caseConfig.trader_loyalty_level;
     }
 }
 
